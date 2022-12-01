@@ -60,7 +60,13 @@ def main(argv):
             if name.startswith("_"):
                 continue
             if inspect.ismethod(method):
-                print(f"\n{cap_resource(resource)} - {cap_method(name)}")
+                annotation = ""
+                if hasattr(method, "__is_legacy"):
+                    if method.__replaced_by:
+                        annotation += f" (legacy, replaced by {method.__replaced_by})"
+                    else:
+                        annotation += " (legacy)"
+                print(f"\n{cap_resource(resource)} - {cap_method(name)}{annotation}")
                 print(f"Desc: {inspect.cleandoc(inspect.getdoc(method))}")
                 sig = inspect.signature(method)
                 print(f"Call: {resource}.{name}{sig}")
