@@ -70,7 +70,7 @@ def parse_action(resource, action, tags):
     print(f"Desc: {description}")
     print(f"Method: {method}")
     print(f"Path: {path}")
-    print(f"Args: {', '.join(args)}")
+    print(f"Args: {', '.join(args).lower()}")
     print("Options:")
     try:
         for name, desc in options:
