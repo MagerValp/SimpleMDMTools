@@ -81,7 +81,11 @@ def main(argv):
                     else:
                         annotation += " (legacy)"
                 print(f"\n{cap_resource(resource)} - {cap_method(name)}{annotation}")
-                print(f"Desc: {inspect.cleandoc(inspect.getdoc(method))}")
+                docs = inspect.getdoc(method)
+                if docs:
+                    print(f"Desc: {inspect.cleandoc(docs)}")
+                else:
+                    print("Desc: None")
                 req_method = find_request_method(method)
                 print(f"Method: {req_method}")
                 sig = inspect.signature(method)
