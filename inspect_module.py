@@ -26,8 +26,7 @@ def cap_resource(name):
 
 
 def cap_method(name):
-    parts = name.split("_")
-    return " ".join(x.capitalize() for x in parts)
+    return name.replace("_", " ").capitalize()
 
 
 def sort_items(items):
