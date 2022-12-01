@@ -77,10 +77,12 @@ def main(argv):
                 annotation = ""
                 if hasattr(method, "__is_legacy"):
                     if method.__replaced_by:
-                        annotation += f" (legacy, replaced by {method.__replaced_by})"
+                        annotation += f" (legacy, replaced by {cap_method(method.__replaced_by)})"
                     else:
                         annotation += " (legacy)"
                 print(f"\n{cap_resource(resource)} - {cap_method(name)}{annotation}")
+                if hasattr(method, "__is_legacy"):
+                    continue
                 docs = inspect.getdoc(method)
                 if docs:
                     print(f"Desc: {inspect.cleandoc(docs)}")
