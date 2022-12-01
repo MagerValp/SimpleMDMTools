@@ -39,6 +39,21 @@ def sort_items(items):
                 items[index], items[index - 1] = items[index - 1], items[index]
 
 
+def find_request_method(func):
+    requests = [
+        ("self.get_data(", "GET"),
+        ("self.get_raw_content(", "GET"),
+        ("self.patch_data(", "PATCH"),
+        ("self.post_data(", "POST"),
+        ("self.put_data(", "PUT"),
+        ("self.delete_data(", "DELETE"),
+    ]
+    source = inspect.getsource(func)
+    for request, method in requests:
+        if request in source:
+            return method
+
+
 def main(argv):
     p = argparse.ArgumentParser()
     p.add_argument("-v", "--verbose", action="store_true",
@@ -68,6 +83,8 @@ def main(argv):
                         annotation += " (legacy)"
                 print(f"\n{cap_resource(resource)} - {cap_method(name)}{annotation}")
                 print(f"Desc: {inspect.cleandoc(inspect.getdoc(method))}")
+                req_method = find_request_method(method)
+                print(f"Method: {req_method}")
                 sig = inspect.signature(method)
                 print(f"Call: {resource}.{name}{sig}")
                 args, options = parse_sig(sig)
