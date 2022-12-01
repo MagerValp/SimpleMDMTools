@@ -68,22 +68,25 @@ def parse_action(resource, action, tags):
             print(tag.name, tag.attrs, tag.get_text())
     if not method and description.startswith("Refer to"):
         return
-    print(f"\n{utils.cap_resource(resource)} - {utils.cap_action(action)}")
-    print(f"Desc: {description}")
-    print(f"Method: {method}")
-    print(f"Path: {path}")
-    print(f"Args: {', '.join(args).lower()}")
-    print("Options:")
+    output = []
+    #output.append(f"{utils.cap_resource(resource)} - {utils.cap_action(action)}")
+    output.append(f"Desc: {description}")
+    output.append(f"Method: {method}")
+    output.append(f"Path: {path}")
+    output.append(f"Args: {', '.join(args).lower()}")
+    output.append("Options:")
     try:
         for name, desc in options:
-            print(f"    {name}: {desc}")
+            output.append(f"    {name}: {desc}")
     except TypeError:
         pass
+    return f"{utils.cap_resource(resource)} - {utils.cap_action(action)}", output
 
 
 def parse_soup(soup):
     content = soup.find("div", {"class": "content"})
     resource = None
+    actions = {}
     for elem in content.children:
         if elem.name == "h1":
             resource = elem.string
@@ -98,10 +101,17 @@ def parse_soup(soup):
                     break
                 elif sibling.name:
                     tags.append(sibling)
-            parse_action(resource, action, tags)
+            try:
+                key, output = parse_action(resource, action, tags)
+                actions[key] = output
+            except TypeError:
+                pass
             continue
 #        if elem.name:
 #            print(elem.name, elem.attrs)
+    for key, output in sorted(actions.items()):
+        print(f"\n{key}")
+        print("\n".join(output))
 
 
 def get_file_soup(path):

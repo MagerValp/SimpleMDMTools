@@ -58,40 +58,46 @@ def main(argv):
     cls_name = session.__class__.__name__
     items = list(session.__dict__.items())
     sort_items(items)
+    actions = {}
     for resource, obj in items:
         #print(f"{cls_name}.{resource}\t{obj}")
-        for name, method in inspect.getmembers(obj):
+        for name, method in sorted(inspect.getmembers(obj)):
             if name not in obj.__class__.__dict__:
                 continue
             if name.startswith("_"):
                 continue
             if inspect.ismethod(method):
+                output = []
                 annotation = ""
                 if hasattr(method, "__is_legacy"):
                     if method.__replaced_by:
                         annotation += f" (legacy, replaced by {utils.cap_action(method.__replaced_by)})"
                     else:
                         annotation += " (legacy)"
-                print(f"\n{utils.cap_resource(resource)} - {utils.cap_action(name)}{annotation}")
+                #output.append(f"\n{utils.cap_resource(resource)} - {utils.cap_action(name)}{annotation}")
+                actions[f"{utils.cap_resource(resource)} - {utils.cap_action(name)}{annotation}"] = output
                 if hasattr(method, "__is_legacy"):
                     continue
                 docs = inspect.getdoc(method)
                 if docs:
-                    print(f"Desc: {inspect.cleandoc(docs)}")
+                    output.append(f"Desc: {inspect.cleandoc(docs)}")
                 else:
-                    print("Desc: None")
+                    output.append("Desc: None")
                 req_method = find_request_method(method)
-                print(f"Method: {req_method}")
+                output.append(f"Method: {req_method}")
                 sig = inspect.signature(method)
-                print(f"Call: {resource}.{name}{sig}")
+                output.append(f"Call: {resource}.{name}{sig}")
                 args, options = parse_sig(sig)
-                print(f"Args: {', '.join(args)}")
-                print("Options:")
+                output.append(f"Args: {', '.join(args)}")
+                output.append("Options:")
                 try:
                     for name, desc in options:
-                        print(f"    {name}: {desc}")
+                        output.append(f"    {name}: {desc}")
                 except TypeError:
                     pass
+    for key, output in sorted(actions.items()):
+        print(f"\n{key}")
+        print("\n".join(output))
 
     return 0
 
