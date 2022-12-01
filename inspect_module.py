@@ -6,7 +6,8 @@ import io
 import sys
 import argparse
 import inspect
-import re
+
+import utils
 
 
 def parse_sig(sig):
@@ -18,15 +19,6 @@ def parse_sig(sig):
         else:
             options.append((name, param.default))
     return args, options
-
-
-def cap_resource(name):
-    parts = re.sub('([A-Z][a-z]+)', r' \1', re.sub('([A-Z]+)', r' \1', name)).split()
-    return " ".join(x.capitalize() for x in parts)
-
-
-def cap_method(name):
-    return name.replace("_", " ").capitalize()
 
 
 def sort_items(items):
@@ -77,10 +69,10 @@ def main(argv):
                 annotation = ""
                 if hasattr(method, "__is_legacy"):
                     if method.__replaced_by:
-                        annotation += f" (legacy, replaced by {cap_method(method.__replaced_by)})"
+                        annotation += f" (legacy, replaced by {utils.cap_action(method.__replaced_by)})"
                     else:
                         annotation += " (legacy)"
-                print(f"\n{cap_resource(resource)} - {cap_method(name)}{annotation}")
+                print(f"\n{utils.cap_resource(resource)} - {utils.cap_action(name)}{annotation}")
                 if hasattr(method, "__is_legacy"):
                     continue
                 docs = inspect.getdoc(method)

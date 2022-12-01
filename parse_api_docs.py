@@ -9,6 +9,8 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
+import utils
+
 
 DOCS_URL = "https://api.simplemdm.com"
 
@@ -66,7 +68,7 @@ def parse_action(resource, action, tags):
             print(tag.name, tag.attrs, tag.get_text())
     if not method and description.startswith("Refer to"):
         return
-    print(f"\n{resource} - {action}")
+    print(f"\n{utils.cap_resource(resource)} - {utils.cap_action(action)}")
     print(f"Desc: {description}")
     print(f"Method: {method}")
     print(f"Path: {path}")
